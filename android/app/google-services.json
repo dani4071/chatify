@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "263155463459",
+    "project_id": "chatify-d6e1c",
+    "storage_bucket": "chatify-d6e1c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263155463459:android:0cfa00f8dd113138274896",
+        "android_client_info": {
+          "package_name": "com.example.chatify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Wi-W85TtF7reV2QwNSU0tdJdmt1GOZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
