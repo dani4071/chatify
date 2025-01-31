@@ -1,6 +1,10 @@
+import 'package:chatify/providers/authentication_providers.dart';
+import 'package:chatify/services/navigation_service.dart';
 import 'package:chatify/widgets/custom_input_field.dart';
 import 'package:chatify/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class loginPage extends StatefulWidget {
   @override
@@ -13,12 +17,20 @@ class _loginPageState extends State<loginPage> {
   late double _deviceHeight;
   late double _deviceWidth;
 
+  late AuthenticationProvider _auth;
+  late NavigationService _navigation;
+
   final _loginFormKey = GlobalKey<FormState>();
+
+  String? email;
+  String? password;
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    _auth = Provider.of<AuthenticationProvider>(context);
+    _navigation = GetIt.instance.get<NavigationService>();
 
     return _buildUI();
   }
@@ -78,7 +90,11 @@ class _loginPageState extends State<loginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             customTextFormField(
-              onSaved: (_value) {},
+              onSaved: (_value) {
+                setState(() {
+                  email = _value;
+                });
+              },
               obscureText: false,
               hintText: 'Email',
             ),
@@ -86,7 +102,11 @@ class _loginPageState extends State<loginPage> {
               height: _deviceHeight * 0.01,
             ),
             customTextFormField(
-              onSaved: (_value) {},
+              onSaved: (_value) {
+                setState(() {
+                  password = _value;
+                });
+              },
               obscureText: true,
               hintText: 'Password',
             ),
@@ -101,15 +121,16 @@ class _loginPageState extends State<loginPage> {
       name: 'Login',
       height: _deviceHeight * 0.065,
       width: _deviceWidth * 0.65,
-      onPressed: () {},
+      onPressed: () {
+        _loginFormKey.currentState!.save();
+        _auth.loginUsingEmailandPassword(email!, password!);
+      },
     );
   }
 
   Widget _registerAccountLink() {
     return GestureDetector(
-      onTap: () {
-        print("object");
-      },
+      onTap: () => _navigation.navigatToRoute("/registerPage"),
       child: const Text(
         "Don't have an account?",
         style: TextStyle(color: Colors.blueAccent),

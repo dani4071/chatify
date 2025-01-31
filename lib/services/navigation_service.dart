@@ -20,7 +20,7 @@ class NavigationService {
     );
   }
 
-  void goBack(String _route) {
+  void goBack() {
     navigatorKey.currentState?.pop();
   }
 }
