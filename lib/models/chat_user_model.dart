@@ -42,7 +42,8 @@ class ChatUserModel {
     return "${lastActive.month}/${lastActive.day}/${lastActive.year}";
   }
 
-// bool wasRecentlyActive() {
-//   return DateTime.now().difference(lastActive).inHours / 2;
-// }
+bool wasRecentlyActive() {
+  return DateTime.now().difference(lastActive).inHours < 2;
+}
+
 }

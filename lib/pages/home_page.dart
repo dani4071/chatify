@@ -1,4 +1,4 @@
-import 'package:chatify/pages/chat_page.dart';
+import 'package:chatify/pages/chats_page.dart';
 import 'package:chatify/pages/users_page.dart';
 import 'package:flutter/material.dart';
 

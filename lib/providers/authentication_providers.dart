@@ -19,6 +19,7 @@ class AuthenticationProvider extends ChangeNotifier {
     _databaseService = GetIt.instance<DatabaseService>();
 
     _auth.authStateChanges().listen((_user) {
+      print(_user?.uid);
       if (_user != null) {
         _databaseService.updateUserLastSeenTime(_user.uid);
         //// this is going to store the user data in the factory
@@ -58,7 +59,7 @@ class AuthenticationProvider extends ChangeNotifier {
       String _email, String _password) async {
     try {
       UserCredential _credentials = await _auth.createUserWithEmailAndPassword(email: _email, password: _password);
-      return _credentials.user!.uid;
+      return _credentials.user?.uid;
     } catch (e) {
       print("bshbdc dsnjds njdsn");
     }

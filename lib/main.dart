@@ -19,6 +19,9 @@ void main() async {
   ));
 }
 
+/// todo check if your data is been written on the firestore database
+
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
