@@ -1,6 +1,9 @@
 import 'package:chatify/models/chat.dart';
+import 'package:chatify/models/chat_message_model.dart';
 import 'package:chatify/providers/authentication_providers.dart';
 import 'package:chatify/providers/chat_page_provider.dart';
+import 'package:chatify/widgets/custom_input_field.dart';
+import 'package:chatify/widgets/custom_list_view_tiles.dart';
 import 'package:chatify/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -88,12 +91,101 @@ class _ChatPageState extends State<ChatPage> {
                       color: Color.fromRGBO(0, 82, 218, 1.0),
                     ),
                   ),
-                )
+                ),
+                _messageListView(),
+                _sendMessageForm(),
               ],
             ),
           ),
         ),
       );
     });
+  }
+
+  Widget _messageListView() {
+    if (_pageProvider.messages != null) {
+      if (_pageProvider.messages!.length != 0) {
+        return Container(
+          height: _deviceHeight * 0.74,
+          child: ListView.builder(
+            itemCount: _pageProvider.messages!.length,
+            itemBuilder: (BuildContext _context, int _index) {
+              ChatMessage _message = _pageProvider.messages![_index];
+              //// basically if the senderID is equal to our own authID that means the message is our own message, so it stays by the right
+              bool _isOwnMessage = _message.senderID == _auth.user.uid;
+              return Container(
+                  child: CustomChatListView(
+                deviceHeight: _deviceHeight,
+                width: _deviceWidth * 0.77,
+                message: _message,
+                isOwnMessage: _isOwnMessage,
+                //// dont really understand the below but video 75 towards the ending
+                sender: this
+                    .widget
+                    .chat
+                    .members
+                    .where((_m) => _m.uid == _message.senderID)
+                    .first,
+              ));
+            },
+          ),
+        );
+      } else {
+        return const Align(
+          alignment: Alignment.center,
+          child: Text(
+            "Be the very first to send a messagbe",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        );
+      }
+    } else {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      );
+    }
+  }
+
+  Widget _sendMessageForm() {
+    return Container(
+      height: _deviceHeight * 0.06,
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(30, 29, 37, 1.0),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      margin: EdgeInsets.symmetric(
+        horizontal: _deviceWidth * 0.0009,
+        vertical: _deviceHeight * 0.03,
+      ),
+      child: Form(
+        key: _messageFormState,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _messageTextField(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _messageTextField() {
+    return SizedBox(
+      width: _deviceWidth * 0.65,
+      child: customTextFormField(
+        obscureText: false,
+        //// remeber to add a regEx to prevent tthe user from typing jagones
+        hintText: "Type a message mfer!",
+        onSaved: (_value) {
+          _pageProvider.message = _value;
+        },
+      ),
+    );
   }
 }
