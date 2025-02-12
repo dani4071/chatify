@@ -19,6 +19,7 @@ class customTextFormField extends StatelessWidget {
     return TextFormField(
       onSaved: (_value) => onSaved(_value!),
       cursorColor: Colors.white,
+      //// remeber to add a regEx to prevent the user from typing jagones
       style: TextStyle(color: Colors.white),
       obscureText: obscureText,
       decoration: InputDecoration(

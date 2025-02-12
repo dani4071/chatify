@@ -7,6 +7,7 @@ import 'package:chatify/services/database_service.dart';
 import 'package:chatify/services/media_service.dart';
 import 'package:chatify/services/navigation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get_it/get_it.dart';
 
 class ChatPageProvider extends ChangeNotifier {
@@ -22,6 +23,10 @@ class ChatPageProvider extends ChangeNotifier {
   List<ChatMessage>? messages;
 
   late StreamSubscription _messageStream;
+  //// the below Stream subscription is responsible for keyboard showing typing or not. just like whatsapp
+  late StreamSubscription _keyboardVisibilityStream;
+  //// the below is from our package keyboard_visibility
+  late KeyboardVisibilityController _keyboardVisibilityController;
 
   String? _message;
 
@@ -39,8 +44,12 @@ class ChatPageProvider extends ChangeNotifier {
     _storage = GetIt.instance.get<CloudStorageService>();
     _media = GetIt.instance.get<MediaService>();
     _navigation = GetIt.instance.get<NavigationService>();
+    //// the below i think is just like assigning a controller to a textediting controller
+    _keyboardVisibilityController = KeyboardVisibilityController();
     //// this gets invoked anytime our chat provider is called
     listenToMessages();
+    listenToKeyboardChanges();
+
   }
 
   @override
@@ -65,11 +74,31 @@ class ChatPageProvider extends ChangeNotifier {
         notifyListeners();
 
         /// Add Scroll To Bottom call
+        //// this is interesting, video 83
+        //// also remeber we added the scroll controller in the listview.builder in chat_page, line 115
+        //// what the below does is it tells flutter to run the function inside after the current frame has been rendered completely
+        //// it will auto be scrolling as well as were adding more chats
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
+          //// this has client is responsible to check if we actually need to scroll down,
+          if(_messageListViewController.hasClients){
+            _messageListViewController.jumpTo(_messageListViewController.position.maxScrollExtent);
+          }
+        });
+
+
       });
     } catch (e) {
       print("Error getting messages.");
       print(e);
     }
+  }
+
+
+  //// video 84, but its very understandable, what it does is check if the keyboard is up and if it is, it updates the value in the database to true and then that bubble stuff that youre typing shows
+  void listenToKeyboardChanges() {
+    _keyboardVisibilityStream = _keyboardVisibilityController.onChange.listen((_event) {
+      _db.updateChatData(_chatId, {"is_activity": _event});
+    });
   }
 
   //// video 73
@@ -78,16 +107,17 @@ class ChatPageProvider extends ChangeNotifier {
       ChatMessage _messageToSend = ChatMessage(
         content: _message!,
         type: MessageType.TEXT,
-        senderID: _chatId,
+        senderID: _auth.user.uid,
         sentTime: DateTime.now(),
       );
-
+       //// anytime this is called it takes the message and sends to the function below which saves it in the database and above we have a listerner event so when the message sends, the listener updates it into the chat. watch video 80 to understand incase
       _db.addMessageToChat(_chatId, _messageToSend);
     }
   }
 
   //// video 73
   /// video 73: didnt test this cause im not using a firebase storage. will only work when i enable firebase storage option
+  //// responsible for sending image as message
   // void sendImageMessage() async {
   //   try {
   //     PlatformFile? _file = await _media.pickImageFromLibrary();

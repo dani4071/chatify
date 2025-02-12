@@ -96,7 +96,8 @@ class CustomChatListView extends StatelessWidget {
               ? roundedImageNetwork(
                   key: UniqueKey(),
                   imagePath: sender.imageURL,
-                  size: width * 0.04,
+                  //// resposible for the circle bubble image that shows up in the chatting screen
+                  size: width * 0.05,
                 )
               : Container(),
           SizedBox(
