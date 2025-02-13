@@ -29,6 +29,18 @@ class DatabaseService {
     return _db.collection(user_Collection).doc(_uid).get();
   }
 
+  Future<QuerySnapshot> getUsers(String? name) {
+    Query _query = _db.collection(user_Collection);
+    //// if we're provided a name then we check if theres a user with that exact name [thats what that isGreaterThan... does] but if we stop there we'd only return the query with the extact name. But if we want to return the query whereby the name matched in any position, we use the[isLessThan... with a + "z"]
+    //// its an interesting concept, dont confuse yourself, check video 90. 2:27. its well explained. cause i understood it.
+    if (name != null) {
+      _query = _query
+          .where("name", isGreaterThanOrEqualTo: name)
+          .where("name", isLessThanOrEqualTo: name + "z");
+    }
+    return _query.get();
+  }
+
   Stream<QuerySnapshot> getChatsForUser(String _uid) {
     return _db
         .collection(chat_Collection)
@@ -77,7 +89,6 @@ class DatabaseService {
     }
   }
 
-
   Future<void> updateUserLastSeenTime(String _uid) async {
     try {
       await _db.collection(user_Collection).doc(_uid).update({
@@ -87,7 +98,6 @@ class DatabaseService {
       print(e);
     }
   }
-
 
   Future<void> deleteChat(String _chatID) async {
     try {
