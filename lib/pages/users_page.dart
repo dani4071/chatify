@@ -1,3 +1,4 @@
+import 'package:chatify/models/chat_user_model.dart';
 import 'package:chatify/providers/authentication_providers.dart';
 import 'package:chatify/providers/user_page_provider.dart';
 import 'package:chatify/widgets/custom_input_field.dart';
@@ -79,23 +80,39 @@ class _usersPageState extends State<usersPage> {
   }
 
   Widget _userList() {
+    //// video 91 but all these are fairly easy, just calm down watch the video again.
+    List<ChatUserModel>? _users = _pageProvider.users;
     return Expanded(
       child: () {
-        return ListView.builder(
-          itemCount: 10,
-          itemBuilder: (BuildContext _context, int _index) {
-            return CustomListViewTile(
-              height: _deviceHeight * 0.10,
-              title: "User $_index",
-              subtitle: "Last Active:",
-              imagePath:
-                  "https://i.pinimg.com/736x/ae/1f/45/ae1f45ec71b4d47f37d03974adc732ad.jpg",
-              isActive: true,
-              isSelected: false,
-              onTap: () {},
+        if (_users != null) {
+          if (_users.length != 0) {
+            return ListView.builder(
+              itemCount: _users.length,
+              itemBuilder: (BuildContext _context, int _index) {
+                return CustomListViewTile(
+                  height: _deviceHeight * 0.10,
+                  title: _users[_index].name,
+                  subtitle: "Last Active:${_users[_index].lastDayActive()}",
+                  imagePath: _users[_index].imageURL,
+                  isActive: _users[_index].wasRecentlyActive(),
+                  isSelected: false,
+                  onTap: () {},
+                );
+              },
             );
-          },
-        );
+          } else {
+            return const Text(
+              "No users was found",
+              style: TextStyle(color: Colors.white),
+            );
+          }
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
+        }
       }(),
     );
   }
