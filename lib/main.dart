@@ -8,6 +8,10 @@ import 'package:chatify/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// TODO: once you already have a chat with someone, then you try to chat that person again from the user page, it creates a new chat with the person instead of going to your already existing chat. the comment section said the below maybe that'll help incase you need it.
+/// I was just coming to ask that same thing. The chat ids are auto generated so youd have to somehow check the exact chat members list and see if the group matches up. but that seems like quite the chore and an excessive amount of firebase reads. How would you fix this?
+
+
 void main() async {
   runApp(SplashPage(
     key: UniqueKey(),

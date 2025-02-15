@@ -2,6 +2,7 @@ import 'package:chatify/models/chat_user_model.dart';
 import 'package:chatify/providers/authentication_providers.dart';
 import 'package:chatify/providers/user_page_provider.dart';
 import 'package:chatify/widgets/custom_input_field.dart';
+import 'package:chatify/widgets/rounded_button.dart';
 import 'package:chatify/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,19 +61,25 @@ class _usersPageState extends State<usersPage> {
             topBar(
               "Users",
               primaryAction: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  _auth.logout();
+                },
                 icon: Icon(Icons.logout),
                 color: const Color.fromRGBO(0, 82, 218, 1.0),
               ),
             ),
             customTextField(
-              onEditingComplete: (_value) {},
+              onEditingComplete: (_value) {
+                _pageProvider.getUser(name: _value);
+                FocusScope.of(context).unfocus();
+              },
               hintText: "Search...",
               obscureText: false,
               controller: _searchFieldTextEditingController,
               icon: Icons.search,
             ),
             _userList(),
+            _createChatButton(),
           ],
         ),
       );
@@ -95,8 +102,14 @@ class _usersPageState extends State<usersPage> {
                   subtitle: "Last Active:${_users[_index].lastDayActive()}",
                   imagePath: _users[_index].imageURL,
                   isActive: _users[_index].wasRecentlyActive(),
-                  isSelected: false,
-                  onTap: () {},
+                  // isSelected: false,
+                  //// the below returns a boolean, i purposely left the above. the below returns true or false and based on that the ui gets a check mark or not, the function explains itself actually. video 92
+                  isSelected:
+                      _pageProvider.selectedUser.contains(_users[_index]),
+                  onTap: () {
+                    //// this parses the uid of the user to the below function... video 92 if you don't understand but its easy
+                    _pageProvider.updateSelectedUser(_users[_index]);
+                  },
                 );
               },
             );
@@ -114,6 +127,20 @@ class _usersPageState extends State<usersPage> {
           );
         }
       }(),
+    );
+  }
+
+  Widget _createChatButton() {
+    return Visibility(
+      visible: _pageProvider.selectedUser.isNotEmpty,
+      child: roundedButton(
+        name: _pageProvider.selectedUser.length == 1 ? "Chat with ${_pageProvider.selectedUser.first.name}" : "Create Group Chat",
+        height: _deviceHeight * 0.08,
+        width: _deviceWidth * 0.80,
+        onPressed: () {
+          _pageProvider.createChat();
+        },
+      ),
     );
   }
 }
